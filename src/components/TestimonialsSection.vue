@@ -34,7 +34,7 @@ const cardTransform = (index: number) => {
 
 <template>
   <section class="overflow-hidden bg-beige-light pb-[120px] pt-[120px] md:pb-[150px] md:pt-[160px]">
-    <div class="mx-auto max-w-[1454px] px-6 md:px-20">
+    <div class="mx-auto max-w-[1454px] px-5 sm:px-6 md:px-20">
       <div class="mx-auto max-w-[460px] text-center" data-reveal>
         <p class="tag">{{ content.eyebrow }}</p>
         <h2 class="mt-3 whitespace-pre-line font-serif text-[42px] leading-none tracking-[-0.02em] text-ink md:text-[56px]">

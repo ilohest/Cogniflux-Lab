@@ -41,7 +41,7 @@ const collapsePanel = (element: Element) => {
 
 <template>
   <section id="faq" class="bg-beige-light pt-[78px] md:pt-[96px]">
-    <div class="mx-auto grid max-w-[1454px] gap-12 px-6 md:grid-cols-2 md:gap-[120px] md:px-20" data-reveal>
+    <div class="mx-auto grid max-w-[1454px] gap-12 px-5 sm:px-6 md:grid-cols-2 md:gap-[120px] md:px-20" data-reveal>
       <div>
         <p class="tag">{{ faq.eyebrow }}</p>
         <h2 class="mt-3 whitespace-pre-line font-serif text-[38px] leading-none tracking-[-0.02em] text-ink md:text-[44px]">

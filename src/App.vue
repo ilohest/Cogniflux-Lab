@@ -28,7 +28,7 @@ onMounted(async () => {
 
 <template>
   <SiteHeader :nav="page.nav" :cta="page.headerCta" />
-  <main>
+  <main class="w-full overflow-x-clip">
     <HeroSection :hero="page.hero" />
     <IntroSection :intro="page.intro" :open-lab="page.openLab" />
     <PracticeSection :steps="page.practiceSteps" :full-width-image="page.fullWidthImage" />

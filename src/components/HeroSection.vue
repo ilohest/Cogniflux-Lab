@@ -17,7 +17,7 @@ const emphasisIndex = (line: string) => line.toLowerCase().indexOf(emphasis);
 <template>
   <section class="hero-haze relative isolate overflow-hidden bg-beige-light pt-[190px] md:pt-[220px]">
     <HeroBackground />
-    <div class="relative z-10 mx-auto max-w-[1454px] px-6 md:px-20">
+    <div class="relative z-10 mx-auto max-w-[1454px] px-5 sm:px-6 md:px-20">
       <div class="mx-auto max-w-[930px] text-center" data-reveal>
         <p class="pill mx-auto mb-7 w-fit">{{ hero.eyebrow }}</p>
         <h1 class="mx-auto max-w-[900px] font-serif text-[48px] leading-[1] tracking-[-0.02em] text-ink md:text-[56px]">

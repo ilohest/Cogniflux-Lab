@@ -10,14 +10,13 @@ defineProps<{
 
 <template>
   <section class="practice-section bg-beige-light">
-    <div class="practice-stack mx-auto max-w-[1454px] px-6 md:px-20">
+    <div class="practice-stack mx-auto max-w-[1454px] px-5 sm:px-6 md:px-20">
       <article
         v-for="(step, index) in steps"
         :key="step.number"
         class="practice-card grid min-h-[590px] rounded-[10px] md:grid-cols-[1.56fr_1fr]"
         :class="step.dark ? 'text-beige-light' : 'text-ink'"
         :style="{ zIndex: index + 1 }"
-        data-reveal
       >
         <div
           class="flex min-h-[430px] flex-col justify-between overflow-hidden rounded-t-[10px] p-8 md:min-h-[590px] md:rounded-l-[10px] md:rounded-tr-none md:p-10"
@@ -25,11 +24,11 @@ defineProps<{
         >
           <div>
             <p class="font-serif text-[30px] leading-none tracking-[-0.02em] text-accent">{{ step.number }}</p>
-            <h3 class="mt-5 font-sans text-[68px] font-normal leading-[0.9] tracking-[-0.03em] md:text-[96px]">
+            <h3 class="mt-5 font-sans text-[56px] font-normal leading-[0.9] tracking-[-0.03em] sm:text-[68px] md:text-[96px]">
               {{ step.title }}
             </h3>
           </div>
-          <div class="max-w-[610px] space-y-6 text-[17px] font-bold leading-[1.4]" :class="step.dark ? 'text-beige-light/92' : 'text-[#4b362d]'">
+          <div class="practice-card-body max-w-[610px] space-y-6 text-[17px] font-bold leading-[1.4]" :class="step.dark ? 'text-beige-light/92' : 'text-[#4b362d]'">
             <p v-for="paragraph in step.body" :key="paragraph" :class="step.dark && step.body.indexOf(paragraph) > 0 ? 'text-primary/70' : ''">
               {{ paragraph }}
             </p>

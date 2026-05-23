@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <section id="agenda" class="bg-beige-med py-[72px] md:py-[82px]">
-    <div class="mx-auto grid max-w-[1454px] gap-12 px-6 md:grid-cols-2 md:gap-[120px] md:px-20" data-reveal>
+    <div class="mx-auto grid max-w-[1454px] gap-12 px-5 sm:px-6 md:grid-cols-2 md:gap-[120px] md:px-20" data-reveal>
       <div class="flex min-h-[420px] flex-col justify-between">
         <div>
           <p class="tag">{{ booking.eyebrow }}</p>

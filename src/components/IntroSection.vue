@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <section id="practice" class="bg-beige-light pb-20 pt-8 md:pb-28">
-    <div class="mx-auto max-w-[1454px] px-6 md:px-20">
+    <div class="mx-auto max-w-[1454px] px-5 sm:px-6 md:px-20">
       <div class="grid gap-12 md:grid-cols-2 md:gap-[110px]" data-reveal>
         <div>
           <p class="tag">{{ intro.eyebrow }}</p>

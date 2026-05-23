@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <footer class="bg-beige-med py-16 md:py-[78px]">
-    <div class="mx-auto max-w-[1454px] px-6 md:px-20">
+    <div class="mx-auto max-w-[1454px] px-5 sm:px-6 md:px-20">
       <div class="grid gap-12 md:grid-cols-2 md:gap-[120px]">
         <h2 class="whitespace-pre-line font-serif text-[38px] leading-none tracking-[-0.02em] text-ink md:text-[44px]">
           {{ footer.headline }}

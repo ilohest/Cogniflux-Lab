@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <section id="for" class="bg-beige-light pt-[62px] md:pt-[76px]">
-    <div class="mx-auto grid max-w-[1454px] gap-10 px-6 md:grid-cols-2 md:gap-[110px] md:px-20" data-reveal>
+    <div class="mx-auto grid max-w-[1454px] gap-10 px-5 sm:px-6 md:grid-cols-2 md:gap-[110px] md:px-20" data-reveal>
       <div>
         <p class="tag">{{ audience.eyebrow }}</p>
         <h2 class="mt-4 max-w-[430px] font-serif text-[36px] leading-none tracking-[-0.02em] text-ink md:text-[44px]">
