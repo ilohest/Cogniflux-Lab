@@ -275,7 +275,15 @@ body {
   z-index: 1;
 }
 
+.practice-after-stack {
+  margin-top: 70px;
+}
+
 @media (min-width: 768px) {
+  .practice-section {
+    --practice-scroll-space: clamp(240px, 34vh, 380px);
+  }
+
   .testimonial-stage {
     display: block;
     margin-left: 0;
@@ -286,21 +294,21 @@ body {
 
   .practice-stack {
     display: block;
-    padding-bottom: 64vh;
+    padding-bottom: var(--practice-scroll-space);
   }
 
   .practice-card {
     position: sticky;
     top: max(96px, calc((100vh - 590px) / 2));
-    margin-bottom: 38vh;
+    margin-bottom: var(--practice-scroll-space);
   }
 
   .practice-card:last-child {
-    margin-bottom: 38vh;
+    margin-bottom: var(--practice-scroll-space);
   }
 
   .practice-after-stack {
-    margin-top: calc(-680px - 102vh);
+    margin-top: calc(-2 * var(--practice-scroll-space) + 86px);
   }
 }
 

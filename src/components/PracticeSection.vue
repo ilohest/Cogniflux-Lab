@@ -42,7 +42,7 @@ defineProps<{
         />
       </article>
     </div>
-    <div class="practice-after-stack mt-[70px] md:mt-[86px]" data-reveal>
+    <div class="practice-after-stack" data-reveal>
       <img :src="imageUrl(fullWidthImage, 2400)" alt="" class="h-[360px] w-full object-cover object-center md:h-[490px]" />
     </div>
   </section>
