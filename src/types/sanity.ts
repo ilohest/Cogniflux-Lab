@@ -112,6 +112,5 @@ export interface HomePageData {
     email: string;
     columns: FooterColumn[];
     legalLinks: FooterLink[];
-    credit: string;
   };
 }

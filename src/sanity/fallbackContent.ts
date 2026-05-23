@@ -141,6 +141,5 @@ export const fallbackHomePage: HomePageData = {
       { label: 'Terms of service', href: '/terms' },
       { label: 'Privacy policy', href: '/privacy' },
     ],
-    credit: 'WEBSITE BY ISAURE',
   },
 };

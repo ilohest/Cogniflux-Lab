@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { HomePageData } from '../types/sanity';
 
+const footerCredit = 'WEBSITE BY ISAURE';
+
 defineProps<{
   footer: HomePageData['footer'];
 }>();
@@ -43,7 +45,7 @@ defineProps<{
           rel="noreferrer"
           class="font-mono text-[10px] uppercase tracking-[0.04em] text-ink transition hover:text-accent"
         >
-          {{ footer.credit }}
+          {{ footerCredit }}
         </a>
       </div>
     </div>

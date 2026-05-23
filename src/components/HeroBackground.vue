@@ -1,211 +1,225 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
-type CloudBlob = {
-  x: number;
-  y: number;
+type Rgb = [number, number, number];
+
+interface Orb {
   baseX: number;
   baseY: number;
+  x: number;
+  y: number;
   vx: number;
   vy: number;
-  radius: number;
-  driftX: number;
-  driftY: number;
+  radiusBase: number;
+  currentRadius: number;
+  color: Rgb;
   phase: number;
   speed: number;
-  color: string;
-};
+  amplitudeX: number;
+  amplitudeY: number;
+}
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 
-let context: CanvasRenderingContext2D | null = null;
-let animationFrame = 0;
-let blobs: CloudBlob[] = [];
-let width = 0;
-let height = 0;
-let pixelRatio = 1;
-let reducedMotion = false;
+const props = withDefaults(defineProps<{
+  distribution?: 'wide' | 'center';
+}>(), {
+  distribution: 'wide',
+});
 
-const pointer = {
+const colors: Rgb[] = [
+  [255, 154, 61],
+  [255, 179, 102],
+  [230, 82, 78],
+  [255, 209, 163],
+  [255, 127, 70],
+  [244, 105, 84],
+];
+
+const mouse = {
   active: false,
   x: 0,
   y: 0,
 };
 
-const palette = [
-  'rgba(255, 91, 30, 0.30)',
-  'rgba(255, 126, 67, 0.26)',
-  'rgba(248, 158, 69, 0.24)',
-  'rgba(255, 186, 121, 0.22)',
-  'rgba(255, 118, 100, 0.18)',
-];
+let ctx: CanvasRenderingContext2D | null = null;
+let frameId = 0;
+let resizeObserver: ResizeObserver | null = null;
+let width = 0;
+let height = 0;
+let pixelRatio = 1;
+let orbs: Orb[] = [];
+let prefersReducedMotion = false;
 
+const rgba = ([r, g, b]: Rgb, alpha: number) => `rgba(${r}, ${g}, ${b}, ${alpha})`;
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-const createBlobs = () => {
-  const cloudWidth = width * 0.92;
-  const cloudHeight = height * 0.48;
-  const centerX = width * 0.54;
-  const centerY = height * 0.68;
-
-  const seeds = [
-    [-0.42, -0.04, 0.34, 0],
-    [-0.28, 0.08, 0.42, 1],
-    [-0.1, -0.1, 0.46, 2],
-    [0.08, 0.02, 0.52, 3],
-    [0.26, -0.02, 0.44, 1],
-    [0.42, 0.08, 0.34, 2],
-    [-0.2, 0.22, 0.38, 4],
-    [0.18, 0.23, 0.4, 0],
-    [0.0, -0.26, 0.36, 3],
-    [0.36, -0.2, 0.3, 4],
-  ];
-
-  blobs = seeds.map(([x, y, radius, colorIndex], index) => {
-    const baseX = centerX + x * cloudWidth;
-    const baseY = centerY + y * cloudHeight;
-
-    return {
-      x: baseX,
-      y: baseY,
-      baseX,
-      baseY,
-      vx: 0,
-      vy: 0,
-      radius: clamp(width * radius, 260, 680),
-      driftX: width * (0.018 + index * 0.002),
-      driftY: height * (0.018 + index * 0.0015),
-      phase: index * 0.74,
-      speed: 0.00022 + index * 0.000025,
-      color: palette[colorIndex],
-    };
-  });
+// Petit générateur déterministe pour garder une composition stable à chaque reload.
+const seededRandom = (seed: number) => {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
 };
 
-const drawBlob = (blob: CloudBlob, time: number) => {
-  if (!context) return;
-
-  const pulse = 1 + Math.sin(time * blob.speed * 1.8 + blob.phase) * 0.07;
-  const radius = blob.radius * pulse;
-  const gradient = context.createRadialGradient(blob.x, blob.y, radius * 0.08, blob.x, blob.y, radius);
-
-  gradient.addColorStop(0, blob.color);
-  gradient.addColorStop(0.42, blob.color.replace(/0\.\d+\)/, '0.16)'));
-  gradient.addColorStop(1, 'rgba(255, 248, 238, 0)');
-
-  context.fillStyle = gradient;
-  context.beginPath();
-  context.ellipse(blob.x, blob.y, radius * 1.22, radius * 0.58, Math.sin(time * 0.00018 + blob.phase) * 0.28, 0, Math.PI * 2);
-  context.fill();
-};
-
-const draw = (time = 0) => {
-  if (!context) return;
-
-  context.clearRect(0, 0, width, height);
-
-  const baseGradient = context.createLinearGradient(0, 0, 0, height);
-  baseGradient.addColorStop(0, '#fff8ee');
-  baseGradient.addColorStop(0.35, '#fff8ee');
-  baseGradient.addColorStop(0.62, 'rgba(255, 230, 211, 0.84)');
-  baseGradient.addColorStop(0.82, 'rgba(249, 177, 120, 0.72)');
-  baseGradient.addColorStop(1, 'rgba(255, 248, 238, 0)');
-  context.fillStyle = baseGradient;
-  context.fillRect(0, 0, width, height);
-
-  context.save();
-  context.globalCompositeOperation = 'multiply';
-  context.filter = `blur(${Math.max(38, width * 0.032)}px) saturate(1.12)`;
-
-  blobs.forEach((blob, index) => {
-    const driftX = Math.sin(time * blob.speed + blob.phase) * blob.driftX;
-    const driftY = Math.cos(time * blob.speed * 0.82 + blob.phase) * blob.driftY;
-    let targetX = blob.baseX + driftX;
-    let targetY = blob.baseY + driftY;
-
-    if (pointer.active) {
-      const dx = blob.x - pointer.x;
-      const dy = blob.y - pointer.y;
-      const distance = Math.hypot(dx, dy) || 1;
-      const reach = Math.max(width * 0.42, 420);
-      const strength = Math.max(0, 1 - distance / reach) ** 2;
-      const direction = index % 2 === 0 ? 1 : -0.42;
-
-      targetX += (dx / distance) * strength * width * 0.085 * direction;
-      targetY += (dy / distance) * strength * height * 0.07;
-    }
-
-    blob.vx = (blob.vx + (targetX - blob.x) * 0.018) * 0.88;
-    blob.vy = (blob.vy + (targetY - blob.y) * 0.018) * 0.88;
-    blob.x += blob.vx;
-    blob.y += blob.vy;
-
-    drawBlob(blob, time);
-  });
-
-  context.restore();
-
-  if (!reducedMotion) {
-    animationFrame = requestAnimationFrame(draw);
-  }
-};
-
-const resize = () => {
+const resizeCanvas = () => {
   if (!canvas.value) return;
 
-  const rect = canvas.value.getBoundingClientRect();
-  width = rect.width;
-  height = rect.height;
-  pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  const bounds = canvas.value.getBoundingClientRect();
+  width = bounds.width;
+  height = bounds.height;
+  pixelRatio = Math.min(window.devicePixelRatio || 1, 1.25);
 
   canvas.value.width = Math.round(width * pixelRatio);
   canvas.value.height = Math.round(height * pixelRatio);
-  context = canvas.value.getContext('2d');
 
-  if (!context) return;
+  ctx = canvas.value.getContext('2d', { alpha: true });
+  if (!ctx) return;
 
-  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  createBlobs();
+  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  createOrbs();
   draw(performance.now());
 };
 
-const updatePointer = (event: PointerEvent) => {
-  if (!canvas.value) return;
+const createOrbs = () => {
+  const orbCount = width < 760 ? 22 : 34;
+  const nextOrbs: Orb[] = [];
 
-  const rect = canvas.value.getBoundingClientRect();
-  const isInside =
-    event.clientX >= rect.left &&
-    event.clientX <= rect.right &&
-    event.clientY >= rect.top &&
-    event.clientY <= rect.bottom;
+  for (let index = 0; index < orbCount; index += 1) {
+    const horizontalSeed = seededRandom(index + 1);
+    const centeredSeed = 0.5 + (horizontalSeed - 0.5) * 0.42;
+    const baseX = props.distribution === 'center'
+      ? centeredSeed * width
+      : (horizontalSeed * 1.2 - 0.1) * width;
+    const baseY = (0.34 + seededRandom(index + 18) * 0.74) * height;
+    const radiusBase = clamp(150 + seededRandom(index + 34) * 210, 145, width < 760 ? 300 : 360);
 
-  pointer.active = isInside;
-  pointer.x = event.clientX - rect.left;
-  pointer.y = event.clientY - rect.top;
+    nextOrbs.push({
+      baseX,
+      baseY,
+      x: baseX,
+      y: baseY,
+      vx: 0,
+      vy: 0,
+      radiusBase,
+      currentRadius: radiusBase,
+      color: colors[index % colors.length],
+      phase: seededRandom(index + 51) * Math.PI * 2,
+      speed: 0.0005 + seededRandom(index + 68) * 0.001,
+      amplitudeX: (props.distribution === 'center' ? 50 : 95) + seededRandom(index + 85) * (props.distribution === 'center' ? 54 : 95),
+      amplitudeY: 82 + seededRandom(index + 102) * 88,
+    });
+  }
+
+  orbs = nextOrbs;
 };
 
-const deactivatePointer = () => {
-  pointer.active = false;
+const updateOrb = (orb: Orb, time: number) => {
+  const idleX = orb.baseX + Math.sin(time * orb.speed + orb.phase) * orb.amplitudeX;
+  const idleY = orb.baseY + Math.cos(time * orb.speed * 0.8 + orb.phase) * orb.amplitudeY;
+  let targetX = idleX;
+  let targetY = idleY;
+
+  if (mouse.active) {
+    const dx = orb.x - mouse.x;
+    const dy = orb.y - mouse.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    const influenceRadius = 400;
+
+    if (distance < influenceRadius) {
+      const force = (influenceRadius - distance) / influenceRadius;
+      const angle = Math.atan2(dy, dx);
+      orb.vx += Math.cos(angle) * force * 2.5;
+      orb.vy += Math.sin(angle) * force * 2.5;
+      orb.currentRadius += (orb.radiusBase * 0.72 - orb.currentRadius) * 0.1;
+    } else {
+      orb.currentRadius += (orb.radiusBase - orb.currentRadius) * 0.05;
+    }
+  } else {
+    orb.currentRadius += (orb.radiusBase - orb.currentRadius) * 0.05;
+  }
+
+  // Physique de ressort: tension + friction pour un retour élastique et doux.
+  const tension = 0.015;
+  const friction = 0.9;
+  orb.vx = (orb.vx + (targetX - orb.x) * tension) * friction;
+  orb.vy = (orb.vy + (targetY - orb.y) * tension) * friction;
+  orb.x += orb.vx;
+  orb.y += orb.vy;
+};
+
+const drawOrb = (orb: Orb) => {
+  if (!ctx) return;
+
+  const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.currentRadius);
+  gradient.addColorStop(0, rgba(orb.color, 0.72));
+  gradient.addColorStop(0.36, rgba(orb.color, 0.42));
+  gradient.addColorStop(0.72, rgba(orb.color, 0.16));
+  gradient.addColorStop(1, rgba(orb.color, 0));
+
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(orb.x, orb.y, orb.currentRadius, 0, Math.PI * 2);
+  ctx.fill();
+};
+
+const draw = (time = 0) => {
+  if (!ctx) return;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.globalCompositeOperation = 'screen';
+
+  orbs.forEach((orb) => {
+    updateOrb(orb, time);
+    drawOrb(orb);
+  });
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  if (!prefersReducedMotion) {
+    frameId = requestAnimationFrame(draw);
+  }
+};
+
+const handleMouseMove = (event: PointerEvent) => {
+  if (!canvas.value) return;
+
+  const bounds = canvas.value.getBoundingClientRect();
+  mouse.active =
+    event.clientX >= bounds.left &&
+    event.clientX <= bounds.right &&
+    event.clientY >= bounds.top &&
+    event.clientY <= bounds.bottom;
+  mouse.x = event.clientX - bounds.left;
+  mouse.y = event.clientY - bounds.top;
+};
+
+const handleMouseLeave = () => {
+  mouse.active = false;
 };
 
 onMounted(() => {
-  reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  resize();
+  prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  resizeCanvas();
 
-  window.addEventListener('resize', resize);
-  window.addEventListener('pointermove', updatePointer, { passive: true });
-  window.addEventListener('pointerleave', deactivatePointer);
+  if (canvas.value) {
+    resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(canvas.value);
+  }
 
-  if (!reducedMotion) {
-    animationFrame = requestAnimationFrame(draw);
+  window.addEventListener('pointermove', handleMouseMove, { passive: true });
+  window.addEventListener('pointerleave', handleMouseLeave);
+
+  if (!prefersReducedMotion) {
+    frameId = requestAnimationFrame(draw);
   }
 });
 
-onBeforeUnmount(() => {
-  cancelAnimationFrame(animationFrame);
-  window.removeEventListener('resize', resize);
-  window.removeEventListener('pointermove', updatePointer);
-  window.removeEventListener('pointerleave', deactivatePointer);
+onUnmounted(() => {
+  cancelAnimationFrame(frameId);
+  resizeObserver?.disconnect();
+  window.removeEventListener('pointermove', handleMouseMove);
+  window.removeEventListener('pointerleave', handleMouseLeave);
 });
 </script>
 
@@ -218,9 +232,11 @@ onBeforeUnmount(() => {
   position: absolute;
   inset-inline: 0;
   top: 0;
-  z-index: 0;
+  z-index: 1;
   width: 100%;
   height: calc(100% - var(--hero-haze-cutoff));
+  filter: blur(58px) saturate(1.08);
   pointer-events: none;
+  transform: translateZ(0);
 }
 </style>

@@ -1,9 +1,10 @@
+import { LimitedTestimonialsInput } from '../components/LimitedTestimonialsInput';
+
 export default {
   name: 'homePage',
   title: 'Home page',
   type: 'document',
   fields: [
-    { name: 'seo', title: 'SEO', type: 'seo' },
     {
       name: 'nav',
       title: 'Navigation links',
@@ -51,7 +52,7 @@ export default {
         { name: 'body', title: 'Body', type: 'text', rows: 4 },
       ],
     },
-    { name: 'practiceSteps', title: 'Practice steps', type: 'array', of: [{ type: 'practiceStep' }], validation: (Rule: any) => Rule.length(3) },
+    { name: 'practiceSteps', title: 'Practice steps', type: 'array', of: [{ type: 'practiceStep' }], validation: (Rule: any) => Rule.min(1) },
     { name: 'fullWidthImage', title: 'Full-width image', type: 'image', options: { hotspot: true } },
     {
       name: 'audience',
@@ -71,7 +72,16 @@ export default {
       fields: [
         { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
         { name: 'title', title: 'Title', type: 'text', rows: 2 },
-        { name: 'items', title: 'Testimonials', type: 'array', of: [{ type: 'reference', to: [{ type: 'testimonial' }] }] },
+        {
+          name: 'items',
+          title: 'Testimonials',
+          type: 'array',
+          of: [{ type: 'reference', to: [{ type: 'testimonial' }] }],
+          validation: (Rule: any) => Rule.max(10),
+          components: {
+            input: LimitedTestimonialsInput,
+          },
+        },
       ],
     },
     {
@@ -120,4 +130,12 @@ export default {
     },
     { name: 'footer', title: 'Footer', type: 'footer' },
   ],
+  preview: {
+    prepare() {
+      return {
+        title: 'Cogniflux Lab landing page',
+        subtitle: 'Home page content',
+      };
+    },
+  },
 };

@@ -46,6 +46,5 @@ export default {
         },
       ],
     },
-    { name: 'credit', title: 'Credit', type: 'string' },
   ],
 };

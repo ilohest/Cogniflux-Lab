@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { HomePageData } from '../types/sanity';
 
 const hoveredIndex = ref<number | null>(null);
 
-defineProps<{
+const props = defineProps<{
   content: HomePageData['testimonials'];
 }>();
 
@@ -15,10 +15,16 @@ const cardLayout = [
   { left: '61%', y: 70, rotation: -8, z: 10 },
   { left: '78%', y: 30, rotation: 11, z: 4 },
   { left: '91%', y: 34, rotation: 7, z: 1 },
+  { left: '22%', y: 218, rotation: 7, z: 7 },
+  { left: '42%', y: 250, rotation: -6, z: 12 },
+  { left: '64%', y: 224, rotation: 5, z: 6 },
+  { left: '84%', y: 242, rotation: -7, z: 9 },
 ];
 
+const visibleTestimonials = computed(() => props.content.items.slice(0, 10));
+
 const cardTransform = (index: number) => {
-  const layout = cardLayout[index % cardLayout.length];
+  const layout = cardLayout[index] || cardLayout[cardLayout.length - 1];
   const hoverLift = hoveredIndex.value === index ? -30 : 0;
   const hoverScale = hoveredIndex.value === index ? 1.035 : 1;
 
@@ -35,16 +41,16 @@ const cardTransform = (index: number) => {
           {{ content.title }}
         </h2>
       </div>
-      <div class="testimonial-stage relative mt-[96px] md:h-[360px]" data-reveal>
+      <div class="testimonial-stage relative mt-[96px] md:h-[560px]" data-reveal>
         <article
-          v-for="(item, index) in content.items"
+          v-for="(item, index) in visibleTestimonials"
           :key="`${item.name}-${item.role}`"
           class="testimonial-card absolute top-0 flex h-[278px] w-[280px] origin-center flex-col justify-between rounded-[7px] p-8 shadow-sm md:h-[292px] md:w-[310px]"
           :style="{
             backgroundColor: item.color || '#F7D3BA',
-            left: cardLayout[index % cardLayout.length].left,
+            left: (cardLayout[index] || cardLayout[cardLayout.length - 1]).left,
             transform: cardTransform(index),
-            zIndex: hoveredIndex === index ? 40 : cardLayout[index % cardLayout.length].z,
+            zIndex: hoveredIndex === index ? 40 : (cardLayout[index] || cardLayout[cardLayout.length - 1]).z,
           }"
           tabindex="0"
           @mouseenter="hoveredIndex = index"

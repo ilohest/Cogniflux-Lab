@@ -120,8 +120,6 @@ body {
 }
 
 .hero-haze {
-  --cloud-x: 0;
-  --cloud-y: 0;
   --hero-haze-cutoff: 180px;
   background: #fff8ee;
 }
@@ -135,127 +133,21 @@ body {
 }
 
 .hero-haze::before {
-  z-index: -2;
+  z-index: 0;
   top: 0;
   height: calc(100% - var(--hero-haze-cutoff));
   background:
-    radial-gradient(44% 28% at 48% 52%, rgba(255, 88, 19, 0.42), rgba(255, 151, 87, 0.26) 38%, rgba(255, 248, 238, 0) 74%),
-    radial-gradient(36% 26% at 73% 58%, rgba(242, 153, 50, 0.32), rgba(255, 190, 121, 0.18) 45%, rgba(255, 248, 238, 0) 78%),
-    linear-gradient(180deg, #fff8ee 0%, #fff8ee 38%, #ffe9d6 61%, #f9b178 82%, rgba(255, 248, 238, 0) 100%);
-  filter: blur(8px) saturate(1.08);
-  transform-origin: center;
-  animation: hero-dust-cloud 13s ease-in-out infinite alternate;
+    radial-gradient(34% 22% at 50% 58%, rgba(231, 82, 78, 0.28), rgba(255, 129, 91, 0.16) 45%, rgba(255, 248, 238, 0) 82%),
+    radial-gradient(54% 34% at 50% 72%, rgba(255, 99, 43, 0.36), rgba(255, 164, 99, 0.22) 46%, rgba(255, 248, 238, 0) 84%),
+    radial-gradient(34% 32% at 78% 78%, rgba(249, 166, 82, 0.26), rgba(255, 206, 148, 0.14) 48%, rgba(255, 248, 238, 0) 84%),
+    linear-gradient(180deg, #fff8ee 0%, #fff8ee 28%, rgba(255, 248, 238, 0.94) 42%, #ffe9dc 60%, #ffc391 82%, rgba(255, 248, 238, 0) 100%);
 }
 
 .hero-haze::after {
-  z-index: 0;
+  z-index: 2;
   bottom: 0;
   height: var(--hero-haze-cutoff);
   background: #fff8ee;
-}
-
-.hero-smoke-layer {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  z-index: -1;
-  height: calc(100% - var(--hero-haze-cutoff));
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.hero-smoke {
-  --mx: 0;
-  --my: 0;
-  --mouse-intensity: 0;
-  position: absolute;
-  display: block;
-  width: 52vw;
-  height: 28vw;
-  min-width: 520px;
-  min-height: 260px;
-  border-radius: 999px;
-  filter: blur(48px);
-  mix-blend-mode: multiply;
-  opacity: calc(0.42 + (var(--mouse-intensity) * 0.1));
-  transform: translate3d(-50%, -50%, 0);
-  will-change: transform, opacity;
-}
-
-.hero-smoke-a {
-  left: 48%;
-  top: 58%;
-  background: rgba(255, 94, 41, 0.42);
-  animation: hero-smoke-a 15s ease-in-out infinite alternate;
-}
-
-.hero-smoke-b {
-  left: 65%;
-  top: 64%;
-  width: 44vw;
-  background: rgba(245, 171, 78, 0.36);
-  animation: hero-smoke-b 18s ease-in-out infinite alternate;
-}
-
-.hero-smoke-c {
-  left: 35%;
-  top: 67%;
-  width: 38vw;
-  background: rgba(255, 139, 106, 0.26);
-  animation: hero-smoke-c 20s ease-in-out infinite alternate;
-}
-
-@keyframes hero-dust-cloud {
-  0% {
-    background-position: 0% 0%, 0% 0%, 0% 0%;
-    transform: scale(1) translate3d(calc(var(--cloud-x) * 1px), calc(var(--cloud-y) * 1px), 0) rotate(0deg);
-  }
-
-  50% {
-    background-position: 7% 4%, -6% 7%, 0% 0%;
-    transform: scale(1.045) translate3d(calc((var(--cloud-x) * 1px) + 14px), calc((var(--cloud-y) * 1px) - 22px), 0) rotate(0.4deg);
-  }
-
-  100% {
-    background-position: -5% 8%, 8% -5%, 0% 0%;
-    transform: scale(1.025) translate3d(calc((var(--cloud-x) * 1px) - 12px), calc((var(--cloud-y) * 1px) + 16px), 0) rotate(-0.3deg);
-  }
-}
-
-@keyframes hero-smoke-a {
-  0% {
-    transform: translate3d(calc(-52% + (var(--mx) * 1px)), calc(-48% + (var(--my) * 1px)), 0) scale(1);
-    opacity: 0.46;
-  }
-
-  100% {
-    transform: translate3d(calc(-44% + (var(--mx) * 1px)), calc(-55% + (var(--my) * 1px)), 0) scale(1.16);
-    opacity: 0.6;
-  }
-}
-
-@keyframes hero-smoke-b {
-  0% {
-    transform: translate3d(calc(-48% + (var(--mx) * 1px)), calc(-52% + (var(--my) * 1px)), 0) scale(1.08);
-    opacity: 0.38;
-  }
-
-  100% {
-    transform: translate3d(calc(-58% + (var(--mx) * 1px)), calc(-45% + (var(--my) * 1px)), 0) scale(0.96);
-    opacity: 0.54;
-  }
-}
-
-@keyframes hero-smoke-c {
-  0% {
-    transform: translate3d(calc(-50% + (var(--mx) * 1px)), calc(-46% + (var(--my) * 1px)), 0) scale(0.94);
-    opacity: 0.3;
-  }
-
-  100% {
-    transform: translate3d(calc(-39% + (var(--mx) * 1px)), calc(-54% + (var(--my) * 1px)), 0) scale(1.1);
-    opacity: 0.48;
-  }
 }
 
 @media (min-width: 768px) {
@@ -264,18 +156,31 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-haze::before,
-  .hero-smoke {
-    animation: none;
-  }
+.final-haze {
+  --hero-haze-cutoff: 0px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #fff8ee;
 }
 
-.final-haze {
+.final-haze::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 30% 0 0;
   background:
-    radial-gradient(52% 48% at 43% 100%, rgba(255, 74, 14, 0.56), rgba(255, 189, 117, 0.28) 45%, rgba(255, 248, 238, 0) 78%),
-    radial-gradient(34% 38% at 75% 92%, rgba(242, 153, 50, 0.38), rgba(255, 248, 238, 0) 76%),
-    #fff8ee;
+    radial-gradient(34% 22% at 50% 58%, rgba(231, 82, 78, 0.28), rgba(255, 129, 91, 0.16) 45%, rgba(255, 248, 238, 0) 82%),
+    radial-gradient(54% 34% at 50% 72%, rgba(255, 99, 43, 0.36), rgba(255, 164, 99, 0.22) 46%, rgba(255, 248, 238, 0) 84%),
+    radial-gradient(34% 32% at 78% 78%, rgba(249, 166, 82, 0.26), rgba(255, 206, 148, 0.14) 48%, rgba(255, 248, 238, 0) 84%),
+    linear-gradient(180deg, #fff8ee 0%, #fff8ee 28%, rgba(255, 248, 238, 0.94) 42%, #ffe9dc 60%, #ffc391 82%, rgba(255, 248, 238, 0) 100%);
+  pointer-events: none;
+}
+
+.final-haze .hero-background-canvas {
+  top: 30%;
+  height: 70%;
+  opacity: 0.94;
 }
 
 [data-reveal] {
@@ -333,13 +238,41 @@ body {
   opacity: 1;
 }
 
+.practice-section {
+  position: relative;
+  isolation: isolate;
+}
+
 .practice-stack {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 72px;
 }
 
 .practice-card {
-  box-shadow: 0 28px 80px rgba(38, 14, 3, 0.08);
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  box-shadow: none;
+}
+
+.practice-card:first-child::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -210px -300px -230px;
+  border-radius: 72px;
+  background:
+    radial-gradient(50% 60% at 50% 50%, rgba(255, 78, 18, 0.88), rgba(255, 133, 54, 0.6) 38%, rgba(255, 190, 132, 0.34) 64%, rgba(255, 248, 238, 0) 88%),
+    radial-gradient(40% 50% at 46% 54%, rgba(255, 111, 38, 0.5), rgba(255, 248, 238, 0) 82%),
+    radial-gradient(36% 44% at 58% 48%, rgba(246, 184, 117, 0.42), rgba(255, 248, 238, 0) 84%);
+  pointer-events: none;
+}
+
+.practice-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
@@ -364,6 +297,10 @@ body {
 
   .practice-card:last-child {
     margin-bottom: 38vh;
+  }
+
+  .practice-after-stack {
+    margin-top: calc(-680px - 102vh);
   }
 }
 

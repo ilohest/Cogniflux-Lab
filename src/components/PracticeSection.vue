@@ -9,17 +9,20 @@ defineProps<{
 </script>
 
 <template>
-  <section class="bg-white ">
+  <section class="practice-section bg-beige-light">
     <div class="practice-stack mx-auto max-w-[1454px] px-6 md:px-20">
       <article
         v-for="(step, index) in steps"
         :key="step.number"
-        class="practice-card grid min-h-[590px] overflow-hidden rounded-[10px] md:grid-cols-[1.56fr_1fr]"
-        :class="step.dark ? 'bg-ink text-beige-light' : 'bg-beige-light text-ink'"
+        class="practice-card grid min-h-[590px] rounded-[10px] md:grid-cols-[1.56fr_1fr]"
+        :class="step.dark ? 'text-beige-light' : 'text-ink'"
         :style="{ zIndex: index + 1 }"
         data-reveal
       >
-        <div class="flex min-h-[430px] flex-col justify-between p-8 md:min-h-[590px] md:p-10">
+        <div
+          class="flex min-h-[430px] flex-col justify-between overflow-hidden rounded-t-[10px] p-8 md:min-h-[590px] md:rounded-l-[10px] md:rounded-tr-none md:p-10"
+          :class="step.dark ? 'bg-ink' : 'bg-beige-light'"
+        >
           <div>
             <p class="font-serif text-[30px] leading-none tracking-[-0.02em] text-accent">{{ step.number }}</p>
             <h3 class="mt-5 font-sans text-[68px] font-normal leading-[0.9] tracking-[-0.03em] md:text-[96px]">
@@ -35,11 +38,11 @@ defineProps<{
         <img
           :src="imageUrl(step.image, 1200)"
           :alt="typeof step.image === 'string' ? '' : step.image.alt || ''"
-          class="h-[430px] w-full object-cover md:h-full"
+          class="h-[430px] w-full rounded-b-[10px] object-cover md:h-full md:rounded-b-none md:rounded-r-[10px]"
         />
       </article>
     </div>
-    <div class="mt-[70px] md:mt-[86px]" data-reveal>
+    <div class="practice-after-stack mt-[70px] md:mt-[86px]" data-reveal>
       <img :src="imageUrl(fullWidthImage, 2400)" alt="" class="h-[360px] w-full object-cover object-center md:h-[490px]" />
     </div>
   </section>
